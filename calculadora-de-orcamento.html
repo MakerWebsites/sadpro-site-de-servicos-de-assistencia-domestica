@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calculadora de Telhado • m² e Valor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b1020;
+            /* Fundo escuro elegante */
+            --card: #121933;
+            /* Cartão */
+            --muted: #9aa5c0;
+            /* Texto secundário */
+            --text: #f6f7fb;
+            /* Texto principal */
+            --brand: #5b8cff;
+            /* Ação primária */
+            --accent: #21c8b0;
+            /* Destaque */
+            --danger: #ff6b6b;
+            /* Erros */
+            --ok: #2bdc6b;
+            /* Sucesso */
+            --ring: 0 0 0 3px rgba(91, 140, 255, .25);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+            background: radial-gradient(1200px 800px at 80% -10%, rgba(33, 200, 176, .15), transparent 60%),
+                radial-gradient(1000px 700px at -20% 10%, rgba(91, 140, 255, .15), transparent 60%),
+                var(--bg);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px
+        }
+
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+            justify-content: space-between;
+            margin-bottom: 24px
+        }
+
+        h1 {
+            font-size: clamp(22px, 3vw, 30px);
+            line-height: 1.1;
+            margin: 0
+        }
+
+        .badge {
+            font-size: 12px;
+            color: var(--bg);
+            background: linear-gradient(90deg, var(--brand), var(--accent));
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            letter-spacing: .3px
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1.2fr .8fr;
+            gap: 20px
+        }
+
+        @media (max-width:900px) {
+            .grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, 0));
+            backdrop-filter: saturate(130%) blur(6px);
+            border: 1px solid rgba(255, 255, 255, .08);
+            border-radius: var(--radius);
+            padding: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .25)
+        }
+
+        .section-title {
+            font-size: 14px;
+            letter-spacing: .4px;
+            color: var(--muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 8px
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 12px
+        }
+
+        .field {
+            grid-column: span 6;
+            display: flex;
+            flex-direction: column;
+            gap: 6px
+        }
+
+        .field.full {
+            grid-column: 1/-1
+        }
+
+        .field.third {
+            grid-column: span 4
+        }
+
+        .label {
+            font-size: 13px;
+            color: #d7ddf0
+        }
+
+        .input,
+        select,
+        .number {
+            width: 100%;
+            padding: 14px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, .08);
+            background: #0e1430;
+            color: var(--text);
+            outline: none;
+            transition: .2s ease;
+            font-size: 15px
+        }
+
+        .input:focus,
+        select:focus {
+            box-shadow: var(--ring);
+            border-color: rgba(91, 140, 255, .45)
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px
+        }
+
+        .btn {
+            border: 0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            letter-spacing: .3px;
+            cursor: pointer;
+            transition: transform .05s ease, box-shadow .2s ease;
+        }
+
+        .btn:active {
+            transform: translateY(1px)
+        }
+
+        .btn.primary {
+            background: linear-gradient(90deg, var(--brand), #7ba4ff);
+            color: #0a0f1f;
+            box-shadow: 0 12px 30px rgba(91, 140, 255, .25)
+        }
+
+        .btn.ghost {
+            background: #0f1633;
+            color: #dfe6ff;
+            border: 1px solid rgba(255, 255, 255, .08)
+        }
+
+        .btn.warn {
+            background: linear-gradient(90deg, #ff8b8b, var(--danger));
+            color: #100b0b
+        }
+
+        .result {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px
+        }
+
+        @media (max-width:560px) {
+            .result {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .metric {
+            background: #0e1430;
+            border-radius: 14px;
+            padding: 14px;
+            border: 1px dashed rgba(255, 255, 255, .12)
+        }
+
+        .metric h3 {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .4px
+        }
+
+        .metric .value {
+            font-size: clamp(20px, 3.5vw, 28px);
+            font-weight: 800
+        }
+
+        .quote {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            background: #0a0f25;
+            border-radius: 14px;
+            padding: 14px;
+            border: 1px solid rgba(255, 255, 255, .08);
+            color: #b6c2e2
+        }
+
+        .small {
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .switch input {
+            appearance: none;
+            width: 42px;
+            height: 26px;
+            border-radius: 999px;
+            background: #0f1633;
+            border: 1px solid rgba(255, 255, 255, .1);
+            position: relative;
+            outline: none;
+            cursor: pointer;
+            transition: .2s
+        }
+
+        .switch input::after {
+            content: "";
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            transition: .2s
+        }
+
+        .switch input:checked {
+            background: linear-gradient(90deg, var(--brand), var(--accent))
+        }
+
+        .switch input:checked::after {
+            left: 21px
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, .12);
+            background: #0d1330;
+            color: #c6d2f2;
+            font-size: 12px
+        }
+
+        .pill .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--ok)
+        }
+
+        footer {
+            margin-top: 24px;
+            color: var(--muted);
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .link {
+            color: #cfe1ff;
+            text-decoration: none;
+            border-bottom: 1px dashed rgba(207, 225, 255, .5)
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Calculadora de Metragem de Telhado</h1>
+                <div class="small">Calcule a área (m²), considere inclinação, margem de desperdício e veja o valor final
+                    do serviço.</div>
+            </div>
+            <span class="badge"><div style="margin: 10px; text-align: start;">
+          <a style="background-color: #0284c7; padding: 5px; border-radius: 20px; text-decoration: none; font-weight: bold;color: white; letter-spacing: 1px;" href="index.html">Voltar ao ínicio</a>
+        </div></span>
+        </header>
+
+        <div class="grid">
+            <!-- Coluna esquerda: Formulário -->
+            <section class="card">
+                <div class="section-title">Dados do Telhado</div>
+                <div class="row">
+                    <div class="field third">
+                        <label class="label" for="comprimento">Comprimento (m)</label>
+                        <input class="input" id="comprimento" type="number" min="0" step="0.01" placeholder="Ex.: 12"
+                            value="10" />
+                        <div class="hint">Medida no sentido da cumeeira.</div>
+                    </div>
+                    <div class="field third">
+                        <label class="label" for="largura">Largura (m)</label>
+                        <input class="input" id="largura" type="number" min="0" step="0.01" placeholder="Ex.: 8"
+                            value="8" />
+                        <div class="hint">Medida perpendicular à cumeeira.</div>
+                    </div>
+                    <div class="field third">
+                        <label class="label" for="inclinacao">Inclinação (%)</label>
+                        <input class="input" id="inclinacao" type="number" min="0" step="0.1" placeholder="Ex.: 30"
+                            value="30" />
+                        <div class="hint">Usamos fator = √(1 + (i/100)²).</div>
+                    </div>
+
+                    <div class="field third">
+                        <label class="label" for="desperdicio">Margem de desperdício (%)</label>
+                        <input class="input" id="desperdicio" type="number" min="0" step="1" value="10" />
+                        <div class="hint">Sugerido 5–15% (cortes, perdas.)</div>
+                    </div>
+                    <div class="field third">
+                        <label class="label" for="preco">Preço por m² (R$)</label>
+                        <input class="input" id="preco" type="number" min="0" step="0.01" value="95" />
+                        <div class="hint">Mão de obra ou mão de obra + material, conforme sua política.</div>
+                    </div>
+                    <div class="field third">
+                        <label class="label" for="quantidade">Qtd. de Telhados (segmentos)</label>
+                        <input class="input" id="quantidade" type="number" min="1" step="1" value="1" />
+                        <div class="hint">Para somar módulos iguais (galpões, blocos).</div>
+                    </div>
+
+                    <div class="field full">
+                        <label class="label">Adicionais (opcional)</label>
+                        <div class="actions" role="group" aria-label="Itens adicionais">
+                            <label class="pill"><input id="retirada" type="checkbox" /> Retirada do telhado antigo (R$)
+                                <input id="retiradaValor" class="number" type="number" min="0" step="0.01" value="0"
+                                    style="width:100px;margin-left:6px"></label>
+                            <label class="pill"><input id="manta" type="checkbox" /> Manta/Impermeabilização (R$) <input
+                                    id="mantaValor" class="number" type="number" min="0" step="0.01" value="0"
+                                    style="width:100px;margin-left:6px"></label>
+                            <label class="pill"><input id="calha" type="checkbox" /> Calhas/ Rufos (R$) <input
+                                    id="calhaValor" class="number" type="number" min="0" step="0.01" value="0"
+                                    style="width:100px;margin-left:6px"></label>
+                        </div>
+                        <div class="hint">Você pode somar valores fixos de serviços/insumos específicos.</div>
+                    </div>
+                </div>
+
+                <div class="actions" style="margin-top:14px">
+                    <button class="btn primary" id="btnCalcular">Calcular</button>
+                    <button class="btn ghost" id="btnLimpar">Limpar</button>
+                    <button class="btn ghost" id="btnCopiar">Copiar orçamento</button>
+                    <button class="btn warn" id="btnImprimir">Imprimir</button>
+                </div>
+            </section>
+
+            <!-- Coluna direita: Resultado -->
+            <aside class="card" id="resultadoCard">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+                    <div class="section-title">Resultado</div>
+                    <span class="pill"><span class="dot"></span> Atualiza em tempo real</span>
+                </div>
+
+                <div class="result" style="margin-bottom:12px">
+                    <div class="metric">
+                        <h3>Área plana (m²)</h3>
+                        <div class="value" id="outAreaPlana">0,00</div>
+                    </div>
+                    <div class="metric">
+                        <h3>Fator de inclinação</h3>
+                        <div class="value" id="outFator">1,000</div>
+                    </div>
+                    <div class="metric">
+                        <h3>Área inclinada (m²)</h3>
+                        <div class="value" id="outAreaInclinada">0,00</div>
+                    </div>
+                    <div class="metric">
+                        <h3>Área com desperdício (m²)</h3>
+                        <div class="value" id="outAreaFinal">0,00</div>
+                    </div>
+                </div>
+
+                <div class="metric" style="margin-bottom:12px">
+                    <h3>Valor do serviço</h3>
+                    <div class="value" id="outValor">R$ 0,00</div>
+                </div>
+
+                <div class="quote" id="orçamentoTexto" aria-live="polite"></div>
+                <div class="small" style="margin-top:8px">* Esta é uma estimativa. Vistoria técnica pode ajustar
+                    medidas, inclinação, perdas e adicionais.</div>
+            </aside>
+        </div>
+
+        <footer>
+            <span>📐 Fórmula usada: área plana = comprimento × largura × quantidade. Fator de inclinação = √(1 +
+                (i/100)²). Área inclinada = área plana × fator. Área final = área inclinada × (1 + desperdício).</span>
+            <span>Feito com ❤ para orçamentos rápidos.</span>
+        </footer>
+    </div>
+
+    <script>
+        const $ = (sel) => document.querySelector(sel);
+        const fmtBRL = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        const fmtM2 = (v) => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        const inputs = [
+            '#comprimento', '#largura', '#inclinacao', '#desperdicio', '#preco', '#quantidade',
+            '#retirada', '#retiradaValor', '#manta', '#mantaValor', '#calha', '#calhaValor'
+        ].map(id => $(id));
+
+        // Carrega último estado
+        const saved = localStorage.getItem('calcTelhado');
+        if (saved) {
+            try { Object.entries(JSON.parse(saved)).forEach(([k, v]) => { const el = document.getElementById(k); if (!el) return; if (el.type === 'checkbox') { el.checked = !!v; } else { el.value = v; } }); } catch (e) { }
+        }
+
+        function calcular() {
+            const comprimento = parseFloat($('#comprimento').value) || 0;
+            const largura = parseFloat($('#largura').value) || 0;
+            const inclinacao = parseFloat($('#inclinacao').value) || 0; // %
+            const desperdicio = (parseFloat($('#desperdicio').value) || 0) / 100; // fração
+            const preco = parseFloat($('#preco').value) || 0; // R$/m²
+            const quantidade = Math.max(1, parseInt($('#quantidade').value || '1', 10));
+
+            // Adicionais
+            const retirada = $('#retirada').checked ? (parseFloat($('#retiradaValor').value) || 0) : 0;
+            const manta = $('#manta').checked ? (parseFloat($('#mantaValor').value) || 0) : 0;
+            const calha = $('#calha').checked ? (parseFloat($('#calhaValor').value) || 0) : 0;
+            const adicionais = retirada + manta + calha;
+
+            const areaPlana = comprimento * largura * quantidade;
+            const fator = Math.sqrt(1 + Math.pow(inclinacao / 100, 2));
+            const areaInclinada = areaPlana * fator;
+            const areaFinal = areaInclinada * (1 + desperdicio);
+            const valor = (areaFinal * preco) + adicionais;
+
+            // Atualiza UI
+            $('#outAreaPlana').textContent = fmtM2(areaPlana);
+            $('#outFator').textContent = fator.toFixed(3);
+            $('#outAreaInclinada').textContent = fmtM2(areaInclinada);
+            $('#outAreaFinal').textContent = fmtM2(areaFinal);
+            $('#outValor').textContent = fmtBRL(valor);
+
+            // Gera texto de orçamento
+            const linhas = [];
+            linhas.push(`Dimensões: ${fmtM2(comprimento)} m × ${fmtM2(largura)} m × ${quantidade} módulo(s)`);
+            linhas.push(`Inclinação: ${inclinacao.toLocaleString('pt-BR')}% (fator ${fator.toFixed(3)})`);
+            linhas.push(`Área plana: ${fmtM2(areaPlana)} m² | Área inclinada: ${fmtM2(areaInclinada)} m²`);
+            linhas.push(`Desperdício: ${(desperdicio * 100).toLocaleString('pt-BR')}% ⇒ Área final: ${fmtM2(areaFinal)} m²`);
+            linhas.push(`Preço por m²: ${fmtBRL(preco)} | Adicionais: ${fmtBRL(adicionais)}`);
+            linhas.push(`\nVALOR TOTAL ESTIMADO: ${fmtBRL(valor)}`);
+            $('#orçamentoTexto').textContent = linhas.join('\n');
+
+            // Salva estado
+            const state = {};
+            inputs.forEach(el => { if (!el) return; state[el.id] = (el.type === 'checkbox' ? el.checked : el.value); });
+            localStorage.setItem('calcTelhado', JSON.stringify(state));
+        }
+
+        function limpar() {
+            ['comprimento', 'largura', 'inclinacao', 'desperdicio', 'preco', 'quantidade', 'retirada', 'manta', 'calha', 'retiradaValor', 'mantaValor', 'calhaValor']
+                .forEach(id => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    if (['retirada', 'manta', 'calha'].includes(id)) el.checked = false; else if (id === 'quantidade') el.value = 1; else el.value = 0;
+                });
+            $('#preco').value = 95;
+            calcular();
+        }
+
+        function copiar() {
+            const texto = $('#orçamentoTexto').textContent.trim();
+            if (!texto) {
+                alert('Faça um cálculo primeiro.');
+                return;
+            }
+            navigator.clipboard.writeText(texto).then(() => {
+                const b = $('#btnCopiar');
+                const old = b.textContent; b.textContent = 'Copiado!'; b.style.background = 'linear-gradient(90deg, var(--accent), #4de6cc)';
+                setTimeout(() => { b.textContent = old; b.style.background = ''; }, 1200);
+            });
+        }
+
+        // Eventos
+        inputs.forEach(el => el && el.addEventListener('input', calcular));
+        $('#btnCalcular').addEventListener('click', calcular);
+        $('#btnLimpar').addEventListener('click', limpar);
+        $('#btnCopiar').addEventListener('click', copiar);
+        $('#btnImprimir').addEventListener('click', () => window.print());
+
+        // Cálculo inicial
+        calcular();
+    </script>
+</body>
+
+</html>

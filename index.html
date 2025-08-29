@@ -408,7 +408,7 @@
     .fab {
       position: fixed;
       right: 1rem;
-      bottom: 1rem;
+      bottom: 3rem;
       z-index: 50;
     }
   </style>
@@ -586,6 +586,10 @@
             informações formatadas.</p>
         </div>
 
+        <div style="margin: 10px; text-align: start;">
+          <a class="btn" style="background-color: #0284c7; padding: 5px; border-radius: 20px; text-decoration: none; font-weight: bold;color: white; letter-spacing: 1px;" href="calculadora-de-orcamento.html">Acessar calculadora de orçamento</a>
+        </div>
+
         <form id="wpp-form" class="form" novalidate>
           <div class="grid-2">
             <div>
@@ -638,7 +642,7 @@
               placeholder="Descreva o problema, medidas, fotos, horários…"></textarea>
           </div>
 
-          <label style="display:flex; align-items: center; gap:.5rem;">
+          <label style="display:flex; align-items: center;">
             <input id="lgpd" type="checkbox" required />
             <span class="terms">Concordo com o tratamento dos dados para contato e orçamento (LGPD).</span>
           </label>
@@ -655,16 +659,37 @@
   <footer>
     <div class="container" style="display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap">
       <p>© <span id="year"></span> S.A.D Pro. Todos os direitos reservados.</p>
-      <p style="text-decoration: none;color: black;">desenvolvido por <a href="https://www.instagram.com/antolin.a.junior/">Antolin A. Junior</a> </p>
+      <p class="dev">Developed by <span>Antolin</span></p>
     </div>
   </footer>
+
+  <style>
+  footer {
+    text-align: center;
+    padding: 15px;
+    background: transparent;
+    color: #fff;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+  }
+
+  .dev span {
+    color: #facc15; /* amarelo destaque */
+    font-weight: bold;
+  }
+
+  .dev span:hover {
+    color: #38bdf8; /* azul ao passar o mouse */
+    transition: 0.3s;
+  }
+</style>
 
   <!-- Botão flutuante WhatsApp -->
   <a class="fab btn" id="fabWpp" href="#contato" aria-label="Abrir formulário de orçamento no WhatsApp">💬 WhatsApp</a>
 
   <script>
     // ===== CONFIGURAÇÕES =====
-    const WPP_NUMBER = '+5511999109721'; // coloque seu número no formato internacional, ex: 55DDDNUMERO
+    const WPP_NUMBER = '+5511919641503'; // coloque seu número no formato internacional, ex: 55DDDNUMERO
 
     // Preenche o ano no rodapé
     document.getElementById('year').textContent = new Date().getFullYear();
@@ -763,6 +788,5 @@
     });
   </script>
 </body>
-
 
 </html>
